@@ -26,6 +26,8 @@ jobs:
       run: |
         cd backend
         python -m pip install --upgrade pip
+        # 修复Python 3.8的类型注解兼容性问题，安装兼容版本的chromadb
+        pip install "chromadb<0.5.0"
         pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
         # 安装兼容版本的huggingface_hub
         pip install "huggingface_hub<0.20.0"
@@ -69,7 +71,12 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./android-app/gradlew
     
-    - name: Run Android unit tests (skip gradle daemon)
+    - name: Ensure JAVA_HOME is set correctly for Gradle
+      run: |
+        echo "ORG_GRADLE_JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+        echo "JAVA_HOME is: $JAVA_HOME"
+        
+    - name: Run Android unit tests
       run: |
         cd android-app
         export GRADLE_OPTS="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
