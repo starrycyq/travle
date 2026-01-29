@@ -16,12 +16,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    
+
     - name: Install dependencies
       run: |
         cd backend
@@ -29,18 +29,18 @@ jobs:
         pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
         pip install -r requirements.txt
         pip install pytest pytest-cov flake8
-        
+
     - name: Run backend tests
       run: |
         cd backend
         python -m pytest tests/ -v --cov=modular_api --cov-report=xml
-        
+
     - name: Run static analysis
       run: |
         cd backend
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
@@ -54,7 +54,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
@@ -63,21 +63,21 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v2
-      
+
     - name: Grant execute permission for gradlew
       run: chmod +x ./android-app/gradlew
-    
+
     - name: Run Android unit tests
       run: |
         cd android-app
         export GRADLE_OPTS="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
         ./gradlew test --stacktrace --no-daemon
-        
+
     - name: Build Android App
       run: |
         cd android-app
         ./gradlew assembleDebug --stacktrace --no-daemon
-        
+
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
@@ -99,7 +99,7 @@ jobs:
       run: |
         cd backend
         docker build -t travle-backend:${{ github.sha }} .
-        
+
     - name: Save Docker image to file
       run: |
         docker save travle-backend:${{ github.sha }} | gzip > travle-backend-${{ github.sha }}.tar.gz
@@ -120,25 +120,25 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        
+
         # 复制Docker镜像到服务器
         scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa travle-backend-${{ github.sha }}.tar.gz root@${{ secrets.SERVER_IP }}:/tmp/
-        
+
         # 在服务器上加载镜像并部署
         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@${{ secrets.SERVER_IP }} << 'EOF'
           # 加载Docker镜像
           docker load -i /tmp/travle-backend-${{ github.sha }}.tar.gz
-          
+
           # 停止旧容器（如果存在）
           docker stop travle-backend || true
           docker rm travle-backend || true
-          
+
           # 删除旧镜像
           docker rmi $(docker images "travle-backend:old" -q) || true
-          
+
           # 重命名当前镜像为最新
           docker tag travle-backend:${{ github.sha }} travle-backend:latest
-          
+
           # 运行新容器
           docker run -d \
             --name travle-backend \
@@ -147,10 +147,10 @@ jobs:
             -e DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }} \
             -e FLASK_ENV=production \
             travle-backend:latest
-          
+
           # 清理临时文件
           rm /tmp/travle-backend-${{ github.sha }}.tar.gz
-          
+
           # 输出运行状态
           docker ps | grep travle-backend
         EOF
