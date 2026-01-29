@@ -1,0 +1,3 @@
+# This file was renamed from ci.yml to avoid duplication with full-cicd.yml
+# We'll use full-cicd.yml as our primary workflow file since it contains the complete CI/CD pipeline
+# This file can be safely deleted after confirming that full-cicd.yml works correctly
