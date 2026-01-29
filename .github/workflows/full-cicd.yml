@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.10]
 
     steps:
     - uses: actions/checkout@v4
@@ -26,11 +26,7 @@ jobs:
       run: |
         cd backend
         python -m pip install --upgrade pip
-        # 修复Python 3.8的类型注解兼容性问题，安装兼容版本的chromadb
-        pip install "chromadb<0.5.0"
         pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-        # 安装兼容版本的huggingface_hub
-        pip install "huggingface_hub<0.20.0"
         pip install -r requirements.txt
         pip install pytest pytest-cov flake8
         
@@ -71,18 +67,17 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./android-app/gradlew
     
-    - name: Ensure JAVA_HOME is set correctly for Gradle
-      run: |
-        echo "ORG_GRADLE_JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
-        echo "JAVA_HOME is: $JAVA_HOME"
-        
     - name: Run Android unit tests
+      env:
+        ORG_GRADLE_JAVA_HOME: ${{ env.JAVA_HOME }}
       run: |
         cd android-app
         export GRADLE_OPTS="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
         ./gradlew test --stacktrace --no-daemon
         
     - name: Build Android App
+      env:
+        ORG_GRADLE_JAVA_HOME: ${{ env.JAVA_HOME }}
       run: |
         cd android-app
         ./gradlew assembleDebug --stacktrace --no-daemon

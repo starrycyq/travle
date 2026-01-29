@@ -4,7 +4,7 @@ Flask-CORS==4.0.0
 Werkzeug==3.0.1
 
 # 数据库
-chromadb==0.4.18
+chromadb==0.3.29  # 使用明确兼容Python 3.8的版本
 
 # 机器学习 - 项目实际使用的
 sentence-transformers==2.2.2
