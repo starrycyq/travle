@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  backend-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: travle_backend_test
+    environment:
+      - FLASK_ENV=test
+      - REDIS_URL=redis://redis-test:6379
+      - DATABASE_URL=sqlite:///test.db
+    volumes:
+      - .:/app
+    depends_on:
+      - redis-test
+      - chroma-test
+    command: >
+      sh -c "pip install pytest pytest-cov &&
+             python -m pytest tests/ -v"
+
+  redis-test:
+    image: redis:7-alpine
+    container_name: travle_redis_test
+    ports:
+      - "6380:6379"
+
+  chroma-test:
+    image: chromadb/chroma:latest
+    container_name: travle_chroma_test
+    ports:
+      - "8001:8000"
+    environment:
+      - CHROMA_DB_IMPL=clickhouse
+      - CLICKHOUSE_HOST=clickhouse-test
+      - CLICKHOUSE_PORT=8123
+    depends_on:
+      - clickhouse-test
+
+  clickhouse-test:
+    image: clickhouse/clickhouse-server:latest
+    container_name: travle_clickhouse_test
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+      - "9090:9090"

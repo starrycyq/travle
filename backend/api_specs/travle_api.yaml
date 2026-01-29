@@ -1,0 +1,700 @@
+openapi: 3.0.3
+info:
+  title: 旅游助手 API
+  description: 智能旅游攻略生成系统API
+  version: 1.1.0
+  contact:
+    name: Travle Support Team
+    email: support@travle.com
+servers:
+  - url: http://localhost:5000
+    description: 本地开发服务器
+  - url: http://121.43.58.117:5000
+    description: 生产服务器
+paths:
+  /:
+    get:
+      summary: 获取API根路径信息
+      description: 返回API的基本状态和可用端点
+      responses:
+        '200':
+          description: API状态正常
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "running"
+                  apis:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                          example: "/input-preference"
+                        method:
+                          type: string
+                          example: "POST"
+                        description:
+                          type: string
+                          example: "记录用户偏好"
+  /model-info:
+    get:
+      summary: 获取模型信息
+      description: 获取当前加载的模型状态信息
+      responses:
+        '200':
+          description: 获取模型信息成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  model_info:
+                    $ref: '#/components/schemas/ModelInfo'
+  /input-preference:
+    post:
+      summary: 记录用户偏好
+      description: 记录用户的旅游目的地和偏好信息
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - destination
+                - preferences
+              properties:
+                destination:
+                  type: string
+                  description: 旅游目的地
+                  example: "杭州"
+                preferences:
+                  type: string
+                  description: 用户偏好描述
+                  example: "喜欢自然风光，想要体验当地美食"
+      responses:
+        '200':
+          description: 偏好记录成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "偏好已记录"
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /generate-guide:
+    post:
+      summary: 生成旅游攻略
+      description: 根据用户的目的地和偏好生成旅游攻略
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - destination
+                - preferences
+              properties:
+                destination:
+                  type: string
+                  description: 旅游目的地
+                  example: "杭州"
+                preferences:
+                  type: string
+                  description: 用户偏好描述
+                  example: "喜欢自然风光，想要体验当地美食"
+      responses:
+        '200':
+          description: 攻略生成成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  guide:
+                    type: string
+                    description: 生成的攻略内容
+                    example: "基于喜欢自然风光，想要体验当地美食的杭州旅游攻略..."
+                  images:
+                    type: array
+                    items:
+                      type: string
+                    description: 相关图片URL列表
+                    example: []
+                  context_length:
+                    type: integer
+                    description: 上下文长度
+                    example: 1234
+                  retrieved_docs:
+                    type: integer
+                    description: 检索到的文档数量
+                    example: 5
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /upload-guide:
+    post:
+      summary: 上传攻略
+      description: 上传自定义的旅游攻略到系统
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: 攻略文本内容
+                  example: "这是一份详细的旅游攻略..."
+                images:
+                  type: array
+                  items:
+                    type: string
+                  description: 相关图片URL列表
+                  example: ["https://example.com/image.jpg"]
+                destination:
+                  type: string
+                  description: 攻略目的地
+                  example: "杭州"
+      responses:
+        '200':
+          description: 攻略上传成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "攻略已上传"
+                  id:
+                    type: string
+                    description: 攻略唯一ID
+                    example: "123e4567-e89b-12d3-a456-426614174000"
+                  model_info:
+                    $ref: '#/components/schemas/ModelInfo'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /community/list:
+    get:
+      summary: 获取社区动态列表
+      description: 获取社区发布的旅游动态列表
+      parameters:
+        - name: page
+          in: query
+          description: 页码
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: 每页数量
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 获取动态列表成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommunityPost'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  msg:
+                    type: string
+                    example: "请求参数错误"
+  /community/publish:
+    post:
+      summary: 发布社区动态
+      description: 发布新的社区旅游动态
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  description: 动态内容
+                  example: "分享我的旅游经验..."
+                destination:
+                  type: string
+                  description: 相关目的地
+                  example: "杭州"
+                images:
+                  type: array
+                  items:
+                    type: string
+                  description: 相关图片URL列表
+                  example: ["https://example.com/image.jpg"]
+      responses:
+        '200':
+          description: 发布成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  msg:
+                    type: string
+                    example: "发布成功"
+                  data:
+                    type: object
+                    properties:
+                      post_id:
+                        type: integer
+                        example: 1
+                      anonymous_id:
+                        type: string
+                        example: "xxx"
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  msg:
+                    type: string
+                    example: "内容不能为空"
+  /community/like:
+    post:
+      summary: 点赞社区动态
+      description: 为指定的社区动态点赞
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - post_id
+              properties:
+                post_id:
+                  type: integer
+                  description: 动态ID
+                  example: 1
+      responses:
+        '200':
+          description: 点赞成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  msg:
+                    type: string
+                    example: "点赞成功"
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  msg:
+                    type: string
+                    example: "参数错误"
+  /community/{post_id}/comments:
+    get:
+      summary: 获取评论列表
+      description: 获取指定帖子的评论列表
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          description: 帖子ID
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: 页码
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: 每页数量
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 获取评论列表成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Comment'
+    post:
+      summary: 添加评论
+      description: 为指定帖子添加评论
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          description: 帖子ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  description: 评论内容
+                  example: "很好的分享！"
+                author_name:
+                  type: string
+                  description: 作者名称
+                  example: "游客小明"
+      responses:
+        '200':
+          description: 评论添加成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  msg:
+                    type: string
+                    example: "评论成功"
+                  data:
+                    type: object
+                    properties:
+                      comment_id:
+                        type: integer
+                        example: 1
+  /community/comments/{comment_id}/like:
+    post:
+      summary: 评论点赞
+      description: 为指定评论点赞
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          description: 评论ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 点赞成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  msg:
+                    type: string
+                    example: "评论点赞成功"
+  /api/auth/xiaohongshu:
+    post:
+      summary: 接收小红书授权信息
+      description: 处理小红书平台的授权信息
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - auth_token
+                - user_id
+              properties:
+                auth_token:
+                  type: string
+                  description: 授权token
+                  example: "auth_token_value"
+                user_id:
+                  type: string
+                  description: 用户ID
+                  example: "user123"
+                expires_in:
+                  type: integer
+                  description: 过期时间（秒）
+                  example: 3600
+      responses:
+        '200':
+          description: 授权信息接收成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "授权信息已接收，开始爬取"
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/search/guides:
+    post:
+      summary: 搜索旅游攻略
+      description: 根据关键词和过滤条件搜索旅游攻略
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: 搜索关键词
+                  example: "杭州三日游攻略"
+                filters:
+                  type: object
+                  description: 搜索过滤条件
+                  properties:
+                    destination:
+                      type: string
+                      description: 目的地
+                      example: "杭州"
+                    duration:
+                      type: string
+                      description: 行程天数
+                      example: "3天"
+                    budget:
+                      type: string
+                      description: 预算水平
+                      example: "中等"
+                limit:
+                  type: integer
+                  description: 返回结果数量限制
+                  default: 5
+                  example: 5
+      responses:
+        '200':
+          description: 搜索成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      query:
+                        type: string
+                        example: "杭州三日游攻略"
+                      results:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "xxx"
+                            title:
+                              type: string
+                              example: "标题"
+                            content:
+                              type: string
+                              example: "内容"
+                            score:
+                              type: number
+                              format: float
+                              example: 0.95
+                            metadata:
+                              type: object
+                              properties:
+                                destination:
+                                  type: string
+                                  example: "杭州"
+                                images:
+                                  type: array
+                                  items:
+                                    type: string
+                                  example: ["https://example.com/image.jpg"]
+                                author:
+                                  type: string
+                                  example: "作者"
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "error"
+        message:
+          type: string
+          example: "错误描述"
+        error_code:
+          type: string
+          example: "ERROR_CODE"
+    CommunityPost:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        content:
+          type: string
+          example: "动态内容"
+        destination:
+          type: string
+          example: "杭州"
+        like_count:
+          type: integer
+          example: 10
+        create_time:
+          type: string
+          format: date-time
+          example: "2024-01-01 12:00:00"
+        anonymous_id:
+          type: string
+          example: "xxx"
+        images:
+          type: array
+          items:
+            type: string
+          example: ["https://example.com/image.jpg"]
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        post_id:
+          type: integer
+          example: 1
+        content:
+          type: string
+          example: "评论内容"
+        author_name:
+          type: string
+          example: "匿名用户"
+        create_time:
+          type: string
+          format: date-time
+          example: "2024-01-01 12:00:00"
+        like_count:
+          type: integer
+          example: 5
+    ModelInfo:
+      type: object
+      properties:
+        use_real_model:
+          type: boolean
+          example: true
+        nlp_available:
+          type: boolean
+          example: true
+        embedding_model_type:
+          type: string
+          example: "real"
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - BearerAuth: []

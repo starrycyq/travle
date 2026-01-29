@@ -1,0 +1,13 @@
+[Unit]
+Description=Travle API Gateway
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/api_gateway
+Environment=PATH=/root/api_gateway/venv/bin
+ExecStart=/root/api_gateway/venv/bin/python gateway.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

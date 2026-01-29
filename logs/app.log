@@ -1,0 +1,10 @@
+2026-01-28 22:05:20,625 - werkzeug - INFO - 127.0.0.1 - - [28/Jan/2026 22:05:20] "[31m[1mPOST /input-preference HTTP/1.1[0m" 401 -
+2026-01-28 22:05:20,646 - werkzeug - INFO - 127.0.0.1 - - [28/Jan/2026 22:05:20] "[31m[1mPOST /input-preference HTTP/1.1[0m" 401 -
+2026-01-28 22:07:28,911 - werkzeug - INFO - 127.0.0.1 - - [28/Jan/2026 22:07:28] "[31m[1mPOST /input-preference HTTP/1.1[0m" 401 -
+2026-01-28 22:07:28,927 - werkzeug - INFO - 127.0.0.1 - - [28/Jan/2026 22:07:28] "[31m[1mPOST /input-preference HTTP/1.1[0m" 401 -
+2026-01-28 22:10:14,575 - werkzeug - INFO - 127.0.0.1 - - [28/Jan/2026 22:10:14] "GET /health HTTP/1.1" 200 -
+2026-01-28 22:46:50,586 - werkzeug - INFO - 127.0.0.1 - - [28/Jan/2026 22:46:50] "[33mGET /api/health HTTP/1.1[0m" 404 -
+2026-01-28 22:47:24,981 - routes.auth - INFO - 新用户注册成功: username=testuser1, user_id=user_3
+2026-01-28 22:47:24,989 - monitor - ERROR - API请求失败
+2026-01-28 22:47:24,989 - utils.validation - ERROR - 验证装饰器异常: local variable 'status_code' referenced before assignment
+2026-01-28 22:47:24,990 - werkzeug - INFO - 127.0.0.1 - - [28/Jan/2026 22:47:24] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 500 -

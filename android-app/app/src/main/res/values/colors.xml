@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 暖色系中国风配色，先用占位值，后续按Figma微调 -->
+    <color name="colorPrimary">#8B4513</color>
+    <color name="colorSecondary">#CD5C5C</color>
+    <color name="colorAccent">#2E8B57</color>
+    <color name="colorBackground">#F5F5DC</color>
+    <color name="colorSurface">#FFFFF0</color>
+    <color name="colorTextPrimary">#333333</color>
+    <color name="colorTextSecondary">#666666</color>
+    <!-- 启动器图标背景色 -->
+    <color name="ic_launcher_background">#8B4513</color>
+</resources>
+
