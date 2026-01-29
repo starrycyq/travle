@@ -67,15 +67,16 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./android-app/gradlew
     
-    - name: Run Android unit tests (without setting JAVA_HOME)
+    - name: Run Android unit tests (skip gradle daemon)
       run: |
         cd android-app
-        ./gradlew test --stacktrace
+        export GRADLE_OPTS="-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
+        ./gradlew test --stacktrace --no-daemon
         
     - name: Build Android App
       run: |
         cd android-app
-        ./gradlew assembleDebug --stacktrace --no-daemon  # 添加--no-daemon避免daemon错误
+        ./gradlew assembleDebug --stacktrace --no-daemon
         
     - name: Upload APK
       uses: actions/upload-artifact@v4

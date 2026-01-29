@@ -33,9 +33,9 @@ cryptography==41.0.7
 # 日志
 python-json-logger==2.0.7
 
-# 云服务SDK（阿里云）
+# 云服务SDK（阿里云）- 使用通用dashscope包
 alibabacloud-tea-openapi==0.3.9
-alibabacloud-dashscope==1.10.0  # 使用已知可用的版本
+dashscope==1.10.0  # 使用通用的dashscope包而不是alibabacloud-dashscope
 
 # 内网穿透
 pyngrok==7.0.0
