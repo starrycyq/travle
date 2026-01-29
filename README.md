@@ -1,85 +1,90 @@
-# Travle - 智能旅行助手
+# Travle - AI智能旅游攻略生成系统
 
-一个基于AI的智能旅行助手Android应用，提供旅行攻略、自驾游规划、AI聊天等功能。
+Travle是一个基于AI的智能旅游攻略生成系统，采用本地+云端协同架构，通过爬取小红书等平台内容并结合大模型能力，为用户提供个性化、高质量的旅游推荐服务。
 
-## 项目架构
+## 项目结构
 
+```
 travle/
-├── android-app/          # Android前端 (Jetpack Compose)
-│   ├── app/              # 应用模块
-│   │   ├── src/
-│   │   │   ├── main/     # 主代码
-│   │   │   │   ├── java/com/travle/app/
-│   │   │   │   │   ├── data/           # 数据层
-│   │   │   │   │   │   ├── api/        # API接口
-│   │   │   │   │   │   ├── auth/       # 认证管理
-│   │   │   │   │   │   ├── database/   # 本地数据库
-│   │   │   │   │   │   ├── model/      # 数据模型
-│   │   │   │   │   │   └── repository/ # 仓库层
-│   │   │   │   │   └── ui/             # UI层
-│   │   │   │   │       ├── screens/    # 页面
-│   │   │   │   │       ├── theme/      # 主题
-│   │   │   │   │       └── viewmodel/  # 视图模型
-│   │   │   │   └── res/                # 资源
-│   │   │   └── test/                   # 测试
-│   │   └── build.gradle.kts
-│   └── build.gradle.kts
-├── backend/              # Flask后端 (云端部署)
-│   ├── modular_api/      # 主应用
-│   │   ├── routes/       # API路由
-│   │   │   ├── auth.py           # 认证接口
-│   │   │   ├── chat.py           # AI聊天
-│   │   │   ├── community.py      # 社区功能
-│   │   │   ├── guide.py          # 攻略功能
-│   │   │   ├── main.py           # 基础接口
-│   │   │   ├── preference.py     # 偏好管理
-│   │   │   ├── roadtrip.py       # 自驾游规划
-│   │   │   ├── search.py         # 搜索
-│   │   │   └── xiaohongshu.py    # 小红书攻略
-│   │   ├── services/      # 业务逻辑
-│   │   │   ├── auth.py
-│   │   │   ├── cache.py
-│   │   │   ├── database.py
-│   │   │   ├── model.py
-│   │   │   ├── scraper.py
-│   │   │   └── vector.py
-│   │   ├── utils/         # 工具类
-│   │   │   ├── config.py
-│   │   │   ├── database_optimizer.py
-│   │   │   ├── monitoring.py
-│   │   │   └── validation.py
-│   │   ├── app.py
-│   │   ├── run_app.py
-│   │   └── .env.example
-│   ├── api_specs/         # API文档
-│   │   └── travle_api.yaml
-│   ├── Dockerfile
-│   ├── docker-compose.yml
-│   └── requirements.txt
-├── app-debug.apk         # Android安装包
-└── zongjie.md            # 项目总结
+├── android-app/              # Android原生应用
+│   ├── app/
+│   │   ├── src/main/
+│   │   │   ├── java/com/travle/app/    # 主要源代码
+│   │   │   └── res/                    # 资源文件
+│   │   └── build.gradle.kts             # 模块构建配置
+│   ├── build.gradle.kts                  # 项目构建配置
+│   └── settings.gradle.kts               # 项目设置
+├── backend/                 # Python后端服务
+│   ├── modular_api/         # 模块化API
+│   │   ├── routes/          # API路由
+│   │   ├── services/        # 业务服务
+│   │   └── utils/           # 工具类
+│   ├── requirements.txt     # Python依赖
+│   ├── Dockerfile          # Docker配置
+│   └── tests/              # 测试文件
+├── api_gateway/            # API网关
+├── scripts/                # 脚本文件
+├── .github/workflows/      # CI/CD配置
+│   └── full-cicd.yml       # 主要CI/CD流程
+├── docs/                   # 文档
+├── chroma_db/              # 向量数据库
+├── DEPLOYMENT_CONFIG.md    # 部署配置说明
+└── README.md               # 项目说明
 ```
 
 ## 技术栈
 
-### 前端 (Android)
+- **前端**: Jetpack Compose (Android), Retrofit, OkHttp, Hilt, Room
+- **后端**: Flask + JWT, Python 3.8+
+- **数据库**: ChromaDB（向量）、SQLite（关系型）
+- **机器学习**: SentenceTransformer, Transformers, 阿里云通义千问API
+- **爬虫**: Selenium + WebDriver
+- **基础设施**: Docker, Nginx, ngrok/frp, Docker Compose
 
-- **语言**: Kotlin
-- **UI框架**: Jetpack Compose
-- **架构**: MVVM + Clean Architecture
-- **依赖注入**: Hilt
-- **网络**: Retrofit + OkHttp
-- **数据库**: Room
-- **构建工具**: Gradle 8.5
+## 开发环境
 
-### 后端 (Flask)
+- Python 3.8+
+- Android Studio Arctic Fox+
+- JDK 11+
+- Chrome浏览器（爬虫依赖）
+- Docker
+- Nginx
 
-- **语言**: Python 3.10+
-- **Web框架**: Flask
-- **数据库**: SQLite + ChromaDB (向量数据库)
-- **缓存**: SQLite Cache
-- **认证**: JWT
-- **部署**: Docker
+## CI/CD
+
+项目使用GitHub Actions实现完整的CI/CD流程，包括：
+
+1. 后端（Python）自动化测试
+2. Android前端自动化测试
+3. Docker镜像构建
+4. 自动部署到阿里云服务器
+
+## 部署
+
+部署到阿里云服务器（Ubuntu 22.04）需要配置以下GitHub Secrets：
+
+- `SERVER_IP`: 服务器IP地址
+- `SSH_PRIVATE_KEY`: SSH私钥
+- `DEEPSEEK_API_KEY`: DeepSeek API密钥
+
+详情请参考 [DEPLOYMENT_CONFIG.md](DEPLOYMENT_CONFIG.md)。
+
+## 运行
+
+### 后端服务
+
+```bash
+cd backend
+pip install -r requirements.txt
+python -m modular_api.run_app
+```
+
+### Android应用
+
+```bash
+cd android-app
+./gradlew installDebug
+```
 
 ## 功能特性
 
