@@ -27,6 +27,8 @@ jobs:
         cd backend
         python -m pip install --upgrade pip
         pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+        # 安装兼容版本的huggingface_hub
+        pip install "huggingface_hub<0.20.0"
         pip install -r requirements.txt
         pip install pytest pytest-cov flake8
         
@@ -70,7 +72,7 @@ jobs:
     - name: Run Android unit tests (skip gradle daemon)
       run: |
         cd android-app
-        export GRADLE_OPTS="-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
+        export GRADLE_OPTS="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
         ./gradlew test --stacktrace --no-daemon
         
     - name: Build Android App
