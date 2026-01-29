@@ -55,11 +55,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up JDK 11
+    - name: Set up JDK 17  # 升级到JDK 17以支持最新Android SDK
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
-        java-version: 11
+        java-version: 17  # 使用JDK 17
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v2
@@ -78,7 +78,7 @@ jobs:
         ./gradlew assembleDebug --stacktrace
         
     - name: Upload APK
-      uses: actions/upload-artifact@v4  # 更新到v4版本
+      uses: actions/upload-artifact@v4
       with:
         name: app-debug-apk
         path: android-app/app/build/outputs/apk/debug/app-debug.apk
@@ -104,7 +104,7 @@ jobs:
         docker save travle-backend:${{ github.sha }} | gzip > travle-backend-${{ github.sha }}.tar.gz
 
     - name: Upload Docker image
-      uses: actions/upload-artifact@v4  # 更新到v4版本
+      uses: actions/upload-artifact@v4
       with:
         name: travle-backend-image
         path: backend/travle-backend-${{ github.sha }}.tar.gz
